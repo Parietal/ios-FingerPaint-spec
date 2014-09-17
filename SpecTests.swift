@@ -41,6 +41,13 @@ class SpecTests: XCTestCase {
         XCTAssertEqual(pickers.count, 5, "There should be 5 color pickers added to the root view")
     }
 
+    func testColorPickerSelection() {
+        for picker in colorPickers() {
+            picker.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+            XCTAssertEqual(picker.backgroundColor!, self.vc.canvasView.currentColor, "Picking color should change the the current color of canvas.")
+        }
+    }
+
     private func colorPickers() -> [UIButton] {
         let pickers = vc.view.subviews.filter { view in
             if let picker = view as? UIButton {
