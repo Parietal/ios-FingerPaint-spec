@@ -59,6 +59,15 @@ class SpecTests: XCTestCase {
         XCTAssertEqual(path.points, points, "The path should contain all touch points.")
     }
 
+    func testClearCanvas() {
+        let canvas = vc.canvasView
+        let points = [(10,10),(20,20),(30,30),(40,40)].map { (x,y) in CGPoint(x: x,y:y) }
+        touchPath(canvas, points: points)
+        XCTAssertEqual(canvas.paths.count, 1, "Touch events should create a new path.")
+        self.vc.clearButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        XCTAssertEqual(canvas.paths.count, 0, "Canvas should be cleared.")
+    }
+
     class MockTouch: UITouch {
         let point: CGPoint
         init(point: CGPoint) {
@@ -89,7 +98,7 @@ class SpecTests: XCTestCase {
     private func colorPickers() -> [UIButton] {
         let pickers = vc.view.subviews.filter { view in
             if let picker = view as? UIButton {
-                return true
+                return picker != self.vc.clearButton
             } else {
                 return false
             }
