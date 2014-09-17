@@ -48,6 +48,44 @@ class SpecTests: XCTestCase {
         }
     }
 
+    func testPathDrawing() {
+        let canvas = vc.canvasView
+        let points = [(10,10),(20,20),(30,30),(40,40)].map { (x,y) in CGPoint(x: x,y:y) }
+        XCTAssertEqual(canvas.paths.count, 0, "There should initially be no paths")
+        touchPath(canvas, points: points)
+        XCTAssertEqual(canvas.paths.count, 1, "Touch events should create a new path.")
+        let path = canvas.paths[0]
+        XCTAssertEqual(path.color, canvas.currentColor, "The path should be drawn with the canvas' current color")
+        XCTAssertEqual(path.points, points, "The path should contain all touch points.")
+    }
+
+    class MockTouch: UITouch {
+        let point: CGPoint
+        init(point: CGPoint) {
+            self.point = point
+        }
+
+        override func locationInView(view: UIView!) -> CGPoint {
+            return self.point
+        }
+    }
+
+    typealias TouchPath = [CGPoint]
+    private func touchPath(view: UIView, points: TouchPath) {
+        assert(points.count >= 3, "A touch path must have at least 3 points")
+        for i in 0..<points.count {
+            let touch = MockTouch(point: points[i])
+            let touches = NSSet(object: touch)
+            if i == 0 {
+                view.touchesBegan(touches, withEvent: nil)
+            } else if i == points.count-1 {
+                view.touchesEnded(touches, withEvent: nil)
+            } else {
+                view.touchesMoved(touches, withEvent: nil)
+            }
+        }
+    }
+
     private func colorPickers() -> [UIButton] {
         let pickers = vc.view.subviews.filter { view in
             if let picker = view as? UIButton {
