@@ -35,4 +35,20 @@ class SpecTests: XCTestCase {
             XCTFail("ViewController should initialize the canvasView property")
         }
     }
+
+    func testColorPickers() {
+        let pickers = colorPickers()
+        XCTAssertEqual(pickers.count, 5, "There should be 5 color pickers added to the root view")
+    }
+
+    private func colorPickers() -> [UIButton] {
+        let pickers = vc.view.subviews.filter { view in
+            if let picker = view as? UIButton {
+                return true
+            } else {
+                return false
+            }
+        }
+        return pickers.map { $0 as UIButton }
+    }
 }
